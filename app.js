@@ -1,16 +1,26 @@
-const http = require("http");
+const express = require("express");
 const request = require("request");
 
-http.createServer((req, res) => {
-  //req is new visitor
+const app = express();
+let btcPrice;
+let btcBlocks;
 
-  request({
-    url: "https://blockchain.info/stats?format=json",
-    json: true
-  }, (error, res, body) => {
-    console.log(body.market_price_usd);
-  })
+request({
+  url: "https://blockchain.info/stats?format=json",
+  json: true
+}, (error, res, body) => {
+  btcPrice = body.market_price_usd;
+  btcBlocks = body.n_blocks_total;
+})
 
-  console.log('I am new bit coin user' + req.url);
-  res.end("Bitcoin to moon");
-}).listen(8080);
+app.get('/', (req, res) => {
+  res.send('Coin to the moon ' + btcPrice);
+});
+
+app.get('/block', (req, res) => {
+  res.sendFile(__dirname + '/index.html');
+});
+
+app.listen(8080, () => {
+  console.log('GO');
+});
